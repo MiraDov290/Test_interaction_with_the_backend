@@ -82,11 +82,13 @@ const selrctros = {
     guard: document.querySelector('.js-guard'),
 }
 
+
 const options = {
     root: null,
     rootMargin: "300px",
     threshold: 0,
 };
+
 
 const observer = new IntersectionObserver(handelerPagination, options);
 let page = 1;
@@ -98,8 +100,10 @@ function handelerPagination(entries, observer) {
             serviceMovie(page)
     .then(data => {
         selrctros.container.insertAdjacentHTML('beforeend', createMarkup(data.results))
-})
-
+        if (data.page >= 500) {
+            observer.unobserver(entry.target)
+        }
+}).catch(err => console.log(err))
         }
     });
 }
@@ -107,8 +111,12 @@ function handelerPagination(entries, observer) {
 serviceMovie()
     .then(data => {
         selrctros.container.insertAdjacentHTML('beforeend', createMarkup(data.results))
-        observer.observe(selrctros.guard)
-})
+        if (data.page < data.total_pages) {
+            observer.observe(selrctros.guard)
+        }
+    })
+    .catch(() => location.href = './error.html')
+
 
 function createMarkup(arr) {
     return arr.map(({ poster_path, release_date, original_title, vote_average }) => `
@@ -119,6 +127,7 @@ function createMarkup(arr) {
         <p>${vote_average}</p>
       </li>`).join('')
 }
+
 
 function serviceMovie(page = 1) {
 const BASE_URL = 'https://api.themoviedb.org/3';
