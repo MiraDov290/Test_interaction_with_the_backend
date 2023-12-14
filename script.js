@@ -22,7 +22,6 @@
 //______________________________________________________________________________________________
 
 
-
 // const selrctros = {
 //     container: document.querySelector('.js-movie-list'),
 //     load: document.querySelector('.js-load-more'),
@@ -63,7 +62,7 @@
 //         if (data.page < data.total_pages) {
 //             selrctros.load.hidden = false;
 //         }
-//     })    
+//     })
 //     .catch(err => console.log(err))
 
 // function createMarkup(arr) {
@@ -76,6 +75,20 @@
 //       </li>`).join('')
 // }
     
+
+function serviceMovie(page = 1) {
+const BASE_URL = 'https://api.themoviedb.org/3';
+const END_POINT = '/trending/movie/week';
+const API_KEY = "345007f9ab440e5b86cef51be6397df1";
+    
+    return fetch(`${BASE_URL}${END_POINT}?api_key=${API_KEY}&page=${page}`)
+        .then(resp => {
+            if (!resp.ok) {
+                throw new Error(resp.statusText);
+            }
+            return resp.json();
+    })
+}
 
 const selrctros = {
     container: document.querySelector('.js-movie-list'),
@@ -92,6 +105,8 @@ const options = {
 
 const observer = new IntersectionObserver(handelerPagination, options);
 let page = 1;
+
+
 
 function handelerPagination(entries, observer) {
     entries.forEach(entry => {
@@ -115,7 +130,7 @@ serviceMovie()
             observer.observe(selrctros.guard)
         }
     })
-    .catch(() => location.href = './error.html')
+    .catch(err => console.log(err))
 
 
 function createMarkup(arr) {
@@ -126,19 +141,4 @@ function createMarkup(arr) {
         <p>${release_date}</p>
         <p>${vote_average}</p>
       </li>`).join('')
-}
-
-
-function serviceMovie(page = 1) {
-const BASE_URL = 'https://api.themoviedb.org/3';
-const END_POINT = '/trending/movie/week';
-const API_KEY = "345007f9ab440e5b86cef51be6397df1";
-    
-    return fetch(`${BASE_URL}${END_POINT}?api_key=${API_KEY}&page=${page}`)
-        .then(resp => {
-            if (!resp.ok) {
-                throw new Error(resp.statusText);
-            }
-            return resp.json();
-    })
 }
