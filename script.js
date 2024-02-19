@@ -76,6 +76,9 @@
 // }
     
 
+
+
+
 function serviceMovie(page = 1) {
 const BASE_URL = 'https://api.themoviedb.org/3';
 const END_POINT = '/trending/movie/week';
@@ -96,6 +99,7 @@ const selrctros = {
 }
 
 
+
 const options = {
     root: null,
     rootMargin: "300px",
@@ -108,37 +112,38 @@ let page = 1;
 
 
 
-function handelerPagination(entries, observer) {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            page += 1;
-            serviceMovie(page)
-    .then(data => {
-        selrctros.container.insertAdjacentHTML('beforeend', createMarkup(data.results))
-        if (data.page >= 500) {
-            observer.unobserver(entry.target)
-        }
-}).catch(err => console.log(err))
-        }
-    });
-}
+    function handelerPagination(entries, observer) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                page += 1;
+                serviceMovie(page)
+                    .then(data => {
+                        selrctros.container.insertAdjacentHTML('beforeend', createMarkup(data.results))
+                        if (data.page >= 500) {
+                            observer.unobserver(entry.target)
+                        }
+                    }).catch(err => console.log(err))
+            }
+        });
+    }
     
-serviceMovie()
-    .then(data => {
-        selrctros.container.insertAdjacentHTML('beforeend', createMarkup(data.results))
-        if (data.page < data.total_pages) {
-            observer.observe(selrctros.guard)
-        }
-    })
-    .catch(err => console.log(err))
+
+    serviceMovie()
+        .then(data => {
+            selrctros.container.insertAdjacentHTML('beforeend', createMarkup(data.results))
+            if (data.page < data.total_pages) {
+                observer.observe(selrctros.guard)
+            }
+        })
+        .catch(err => console.log(err))
 
 
-function createMarkup(arr) {
-    return arr.map(({ poster_path, release_date, original_title, vote_average }) => `
-    <li>
-        <img src="https://image.tmdb.org/t/p/w300${poster_path}" alt="${original_title}"/>
-        <h2>${original_title}</h2>
-        <p>${release_date}</p>
-        <p>${vote_average}</p>
+    function createMarkup(arr) {
+        return arr.map(({ poster_path, release_date, original_title, vote_average }) => `
+    <li class='photo-card'>
+        <img class='photo-img' src="https://image.tmdb.org/t/p/w300${poster_path}" alt="${original_title}"/>
+        <h2 class='title-img'>${original_title}</h2>
+        <p class='date-img'>${release_date}</p>
+        <p class='averoge-img'>${vote_average}</p>
       </li>`).join('')
-}
+    }
